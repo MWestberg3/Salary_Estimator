@@ -11,7 +11,7 @@ class DataGenerator:
     # Generate previous salary data with random growth rate in reverse
     def generate_salary_data(self, current_salary: float, tenure: int, average_growth_rate: float, variability: float) -> list[float]:
         salaries = [current_salary]
-        for year in range(1, tenure):
+        for year in range(tenure):
             random_growth = np.random.uniform(average_growth_rate - variability, average_growth_rate + variability)
             new_salary = round(salaries[-1] / (1 + random_growth), 2)
             salaries.append(new_salary)
@@ -20,7 +20,7 @@ class DataGenerator:
     # Generate Bonus Data
     def generate_bonus_data(self, tenure: int, current_bonus: float, growth_rate: float, variability: float) -> list[float]:
         bonuses = [current_bonus]
-        for year in range(1, tenure):
+        for year in range(tenure):
             random_growth = np.random.uniform(growth_rate - variability, growth_rate + variability)
             new_bonus = round(bonuses[-1] * (1 + random_growth), 2)
             bonuses.append(new_bonus)

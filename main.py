@@ -1,27 +1,19 @@
 import DataGenerator
 from sklearn.ensemble import RandomForestClassifier
+import random
 
-tenure = 10
-current_salary = 100000
-current_bonus = 10000
-average_growth_rate = 0.05
-variability = 0.02
+# Instantiate DataGenerators
+data_generator_list = []
 
-# Create a DataGenerator object
-data_generator = DataGenerator.DataGenerator(tenure, current_salary, current_bonus, average_growth_rate, variability)
+for i in range(100):
+    tenure = random.randint(1, 20)
+    current_bonus = random.uniform(1000, 10000)
+    average_growth_rate = random.uniform(0.01, 0.04)
+    variability = 0.02
+    current_salary = random.uniform(50000, 150000)
 
-# Get the salary history
-salary_history = data_generator.salary_history
-print("Current Salary: ", current_salary)
-print("Salary History: ", salary_history)
+    data_generator_list.append(DataGenerator.DataGenerator(tenure, current_salary, current_bonus, average_growth_rate, variability))
 
-# Get the bonus history
-bonus_history = data_generator.bonus_history
-print("Bonus History: ", bonus_history)
-
-# Get the inflation rates
-inflation_rates = data_generator.inflation_rates
-print("Inflation Rates: ", inflation_rates)
 
 # Create a RandomForestClassifier object
 rf_classifier = RandomForestClassifier()
