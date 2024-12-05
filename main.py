@@ -43,8 +43,6 @@ for i in range(300):
 # Format data to be a numpy array for the RandomForestClassifier
 X = np.array([salary_history_mean_list, salary_std_dev_list, tenure_list, inflation_rate_mean_list, inflation_rate_std_dev_list]).T
 y = np.array(current_salary_list)
-print(len(X))
-print(len(y))
 
 
 ### GEEKS FOR GEEKS EXAMPLE ON IRIS DATASET ###
