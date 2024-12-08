@@ -6,6 +6,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import metrics
 
+FEATURE_FLAG = 0
+
 # Instantiate DataGenerators
 current_salary_list = []
 salary_history_mean_list = []
@@ -49,31 +51,31 @@ print(data.head())
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-param_grid = {
-    'n_estimators': [100, 200, 300], # Common values for n_estimators
-    'max_depth': [None, 10, 20, 30], # Common values for max_depth
-    'min_samples_split': [2, 5, 10], # Common values for min_samples_split
-    'min_samples_leaf': [1, 2, 4], # Common values for min_samples_leaf
-    'max_features': ['auto', 'sqrt', 'log2'], # Common values for max_features
-}
-grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+if FEATURE_FLAG == 0:
+    param_grid = {
+        'n_estimators': [100, 200, 300], # Common values for n_estimators
+        'max_depth': [None, 10, 20, 30], # Common values for max_depth
+        'min_samples_split': [2, 5, 10], # Common values for min_samples_split
+        'min_samples_leaf': [1, 2, 4], # Common values for min_samples_leaf
+        'max_features': ['auto', 'sqrt', 'log2'], # Common values for max_features
+    }
+    grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
+    grid_search.fit(X_train, y_train)
+    
+    y_pred = grid_search.predict(X_test)
+    best_model = grid_search.best_estimator_
+    feature_imp = pd.Series(best_model.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
+    print(feature_imp)
 
-grid_search.fit(X_train, y_train)
+else:
+    clf = RandomForestRegressor(n_estimators=100)
+    clf.fit(X_train, y_train)
 
-# clf = RandomForestRegressor(n_estimators=100)
+    y_pred = clf.predict(X_test)
 
-# clf.fit(X_train, y_train)
-
-y_pred = grid_search.predict(X_test)
-# y_pred = clf.predict(X_test)
+    feature_imp = pd.Series(clf.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
+    print(feature_imp)
 
 print()
 mae = metrics.mean_absolute_error(y_test, y_pred)
-print("Mean Absolute Error: ", mae)
-
-best_model = grid_search.best_estimator_
-feature_imp = pd.Series(best_model.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
-print(feature_imp)
-
-# feature_imp = pd.Series(clf.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
-# print(feature_imp)
+print("MEAN ABSOLUTE ERROR ", mae)
