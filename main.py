@@ -1,10 +1,9 @@
 from DataGenerator import DataGenerator
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor
 import random
-from sklearn.datasets import load_iris
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn import metrics
 
 # Instantiate DataGenerators
@@ -50,41 +49,31 @@ print(data.head())
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
 
-clf = RandomForestClassifier(n_estimators=100)
+param_grid = {
+    'n_estimators': [100, 200, 300], # Common values for n_estimators
+    'max_depth': [None, 10, 20, 30], # Common values for max_depth
+    'min_samples_split': [2, 5, 10], # Common values for min_samples_split
+    'min_samples_leaf': [1, 2, 4], # Common values for min_samples_leaf
+    'max_features': ['auto', 'sqrt', 'log2'], # Common values for max_features
+}
+grid_search = GridSearchCV(RandomForestRegressor(), param_grid=param_grid, cv=5, n_jobs=-1, verbose=2)
 
-clf.fit(X_train, y_train)
+grid_search.fit(X_train, y_train)
 
-# y_pred = clf.predict(X_test)
-
-# print()
-# print("Accuracy: ", metrics.accuracy_score(y_test, y_pred))
-
-# feature_imp = pd.Series(clf.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenjsonure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
-# print(feature_imp)
-### GEEKS FOR GEEKS EXAMPLE ON IRIS DATASET ###
-# iris = load_iris()
-
-# X, y = load_iris(return_X_y=True)
-
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
-
-# try:
-#     sepalwidth = iris.data[:, 1]
-# except IndexError:
-#     sepalwidth = None
-
-# data = pd.DataFrame({'sepallength': iris.data[:, 0], 'sepalwidth': sepalwidth, 'petallength': iris.data[:, 2], 'petalwidth': iris.data[:, 3],'target': iris.target})
-
-# print(data.head())
-
-# clf = RandomForestClassifier(n_estimators=100)
+# clf = RandomForestRegressor(n_estimators=100)
 
 # clf.fit(X_train, y_train)
 
+y_pred = grid_search.predict(X_test)
 # y_pred = clf.predict(X_test)
 
-# print()
-# print("Accuracy: ", metrics.accuracy_score(y_test, y_pred))
+print()
+mae = metrics.mean_absolute_error(y_test, y_pred)
+print("Mean Absolute Error: ", mae)
 
-# feature_imp = pd.Series(clf.feature_importances_, index=iris.feature_names).sort_values(ascending=False)
+best_model = grid_search.best_estimator_
+feature_imp = pd.Series(best_model.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
+print(feature_imp)
+
+# feature_imp = pd.Series(clf.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
 # print(feature_imp)
