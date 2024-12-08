@@ -10,7 +10,7 @@ from sklearn import metrics
 # Instantiate DataGenerators
 current_salary_list = []
 salary_history_mean_list = []
-salary_std_dev_list = []
+salary_history_std_dev_list = []
 tenure_list = []
 inflation_rate_mean_list = []
 inflation_rate_std_dev_list = []
@@ -35,24 +35,37 @@ for i in range(300):
 
     current_salary_list.append(round(current_salary, 2))
     salary_history_mean_list.append(salary_mean)
-    salary_std_dev_list.append(salary_std_dev)
+    salary_history_std_dev_list.append(salary_std_dev)
     tenure_list.append(tenure)
     inflation_rate_mean_list.append(inflation_rate_mean)
     inflation_rate_std_dev_list.append(inflation_rate_std_dev)
 
 # Format data to be a numpy array for the RandomForestClassifier
-X = np.array([salary_history_mean_list, salary_std_dev_list, tenure_list, inflation_rate_mean_list, inflation_rate_std_dev_list]).T
+X = np.array([salary_history_mean_list, salary_history_std_dev_list, tenure_list, inflation_rate_mean_list, inflation_rate_std_dev_list]).T
 y = np.array(current_salary_list)
 
+data = pd.DataFrame({'salary_history_mean': salary_history_mean_list, 'salary_history_std_dev': salary_history_std_dev_list, 'tenure': tenure_list, 'inflation_rate_mean': inflation_rate_mean_list, 'inflation_rate_std_dev': inflation_rate_std_dev_list, 'current_salary': current_salary_list})
 
+print(data.head())
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25)
+
+clf = RandomForestClassifier(n_estimators=100)
+
+clf.fit(X_train, y_train)
+
+# y_pred = clf.predict(X_test)
+
+# print()
+# print("Accuracy: ", metrics.accuracy_score(y_test, y_pred))
+
+# feature_imp = pd.Series(clf.feature_importances_, index=['salary_history_mean', 'salary_history_std_dev', 'tenjsonure', 'inflation_rate_mean', 'inflation_rate_std_dev']).sort_values(ascending=False)
+# print(feature_imp)
 ### GEEKS FOR GEEKS EXAMPLE ON IRIS DATASET ###
 # iris = load_iris()
 
 # X, y = load_iris(return_X_y=True)
 
-# print(type(X))
-# print(X)
-# print(len(y))
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
 # try:
